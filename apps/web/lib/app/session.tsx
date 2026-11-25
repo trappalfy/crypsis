@@ -73,7 +73,7 @@ export function SessionProvider({ children }: { children: React.ReactNode }) {
   const gen = useRef(0); // bumps on every lock/unlock: a late unlock result for an old generation is discarded
 
   useEffect(() => watchWallets(setWallets), []);
-  const canModeA = wallet ? capabilities(wallet).signsV1 && !modeARefused : false;
+  const canModeA = wallet ? capabilities(wallet).directMode && !modeARefused : false;
 
   const lock = useCallback(() => {
     gen.current++;
@@ -93,7 +93,7 @@ export function SessionProvider({ children }: { children: React.ReactNode }) {
       const refused = localStorage.getItem(refusedKey(w.name)) === "1";
       const pref = localStorage.getItem(modeKey(w.name)) as RingMode | null;
       setModeARefused(refused);
-      setModeState(refused || !capabilities(w).signsV1 ? "B" : (pref ?? "A"));
+      setModeState(refused || !capabilities(w).directMode ? "B" : (pref ?? "A"));
       localStorage.setItem(LAST_WALLET, w.name);
       setStatus("locked");
     } catch (e) {

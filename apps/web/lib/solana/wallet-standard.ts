@@ -31,8 +31,13 @@ export interface WalletCapabilities {
   /** Transaction versions the wallet says it can sign. Ring needs 1. */
   txVersions: readonly SolanaTransactionVersion[];
   signsV1: boolean;
+  /** Mode A is possible: signs v1 and isn't known to refuse the Ring SDK's off-chain message envelope. */
+  directMode: boolean;
   chains: readonly string[];
 }
+
+/** Wallets that refuse the off-chain envelope Mode A needs (owner's wallet check, 2026-11-25). */
+const REFUSES_ENVELOPE = new Set(["Phantom"]);
 
 export function isSolanaWallet(w: Wallet): boolean {
   return w.chains.some((c) => c.startsWith("solana:")) && StandardConnect in w.features && SolanaSignMessage in w.features;
@@ -50,6 +55,7 @@ export function capabilities(w: Wallet): WalletCapabilities {
     signAndSend: SolanaSignAndSendTransaction in w.features,
     txVersions,
     signsV1: txVersions.includes(1),
+    directMode: txVersions.includes(1) && !REFUSES_ENVELOPE.has(w.name),
     chains: w.chains,
   };
 }

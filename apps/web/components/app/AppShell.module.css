@@ -6,10 +6,8 @@
 .header { position: relative; z-index: 2; display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; gap: 16px; padding: 22px var(--margin); }
 .mark { font-family: var(--serif); font-size: 34px; line-height: 1; letter-spacing: -0.035em; text-decoration: none; color: #fff; }
 .right { justify-self: end; display: flex; gap: 8px; align-items: center; }
-.corner { position: absolute; top: 74px; right: var(--margin); width: 150px; opacity: .6; pointer-events: none; z-index: 1; }
 .main { position: relative; z-index: 1; padding: 24px var(--margin) 96px; max-width: 1280px; margin: 0 auto; }
 @media (max-width: 760px) {
   .header { grid-template-columns: 1fr auto; row-gap: 14px; }
   .header > nav { grid-column: 1 / -1; grid-row: 2; justify-self: center; }
-  .corner { display: none; }
 }

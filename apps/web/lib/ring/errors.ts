@@ -33,5 +33,7 @@ export function friendlyError(e: Partial<RingErrorPayload> & { message?: string;
   if (has("BLOCKHASH_EXPIRED") || /blockhash not found|expired/i.test(msg)) return { message: "The transaction expired before it landed. Try again.", retry: true };
   if (has("LOCKED")) return { message: "Unlock your private balance first." };
   if ((e as { signature?: string }).signature) return { message: "Sent, but something failed afterwards. Check the transaction link before trying again." };
+  // RPC transport failures (HTTP 429 rate limit, timeouts, outages) — after every specific RPC-borne error above
+  if (has("CLIENT_RPC") || codes.some((c) => c.startsWith("SOLANA_81")) || /\b429\b|too many requests/i.test(msg)) return { message: "The Solana network is busy or unreachable right now. Try again in a moment.", retry: true };
   return { message: "Something went wrong. Try again.", retry: true };
 }

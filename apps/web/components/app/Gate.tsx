@@ -1,10 +1,8 @@
 "use client";
 // Access states (brief §6.1): not connected -> connected/locked -> unlocked (+ not activated banner).
 import Link from "next/link";
-import { useMemo } from "react";
-import AsciiCanvas from "@/components/ascii/AsciiCanvas";
+import FlappingButterfly from "@/components/ascii/FlappingButterfly";
 import Cipher from "@/components/ascii/Cipher";
-import { butterflyField } from "@/lib/ascii/engine";
 import { useSession } from "@/lib/app/session";
 import { friendlyError } from "@/lib/ring/errors";
 import { capabilities } from "@/lib/solana/wallet-standard";
@@ -13,11 +11,6 @@ import { SITE } from "@/lib/site";
 import ui from "./ui.module.css";
 import styles from "./Gate.module.css";
 
-const ORANGE = ["#EC6C40"];
-function SleepingButterfly() {
-  const lum = useMemo(() => butterflyField(0, { cols: 110, rows: 46, flap: 72 }).lum, []);
-  return <AsciiCanvas cols={110} rows={46} colors={ORANGE} frame={() => ({ lum })} mode="static" label="A sleeping butterfly, wings folded" />;
-}
 
 export function ErrorNotice({ error }: { error: unknown }) {
   if (!error) return null;
@@ -34,7 +27,7 @@ function Connect() {
   const { wallets, connect, status, error } = useSession();
   return (
     <div className={styles.center}>
-      <div className={styles.art}><SleepingButterfly /></div>
+      <div className={styles.art}><FlappingButterfly /></div>
       <h1 className={ui.pageTitle}>Your <em>private</em> balance</h1>
       <p className={ui.note} style={{ marginTop: 14 }}>{APP_COPY.connect}</p>
       <div className={styles.wallets}>
@@ -46,7 +39,7 @@ function Connect() {
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img src={w.icon} alt="" width={28} height={28} />
               <span style={{ flex: 1 }}>{w.name}</span>
-              <span className={ui.note}>{c.signsV1 ? "Direct" : "Crypsis vault"}</span>
+              <span className={ui.note}>{c.directMode ? "Direct" : "Crypsis vault"}</span>
             </button>
           );
         })}

@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { isUserRejection, walletRefusedEnvelope, WalletCapabilityError } from "./wallet-standard";
+import { capabilities, isUserRejection, walletRefusedEnvelope, WalletCapabilityError } from "./wallet-standard";
 
 describe("wallet refusal vs user rejection", () => {
   it("treats Phantom's envelope refusal as a wallet refusal (→ Mode B)", () => {
@@ -19,5 +19,20 @@ describe("wallet refusal vs user rejection", () => {
   it("never treats a timeout or a non-deterministic wallet as a refusal", () => {
     expect(walletRefusedEnvelope(new WalletCapabilityError("NO_RESPONSE", "x"))).toBe(false);
     expect(walletRefusedEnvelope(new WalletCapabilityError("NONDETERMINISTIC", "x"))).toBe(false);
+  });
+});
+
+describe("direct mode", () => {
+  const wallet = (name: string, versions: (string | number)[]) => ({
+    name, icon: "data:,", version: "1.0.0", chains: ["solana:mainnet"], accounts: [],
+    features: { "standard:connect": {}, "solana:signMessage": {}, "solana:signTransaction": { supportedTransactionVersions: versions } },
+  }) as never;
+  it("Phantom goes straight to a Crypsis vault even though it declares v1", () => {
+    expect(capabilities(wallet("Phantom", ["legacy", 0, 1])).signsV1).toBe(true);
+    expect(capabilities(wallet("Phantom", ["legacy", 0, 1])).directMode).toBe(false);
+  });
+  it("other v1 wallets are offered Mode A; wallets without v1 are not", () => {
+    expect(capabilities(wallet("Solflare", ["legacy", 0, 1])).directMode).toBe(true);
+    expect(capabilities(wallet("MetaMask", ["legacy", 0])).directMode).toBe(false);
   });
 });

@@ -14,6 +14,10 @@ describe("error mapping (brief §8.4)", () => {
     [{ codes: ["SOLANA_-32002", "SOLANA_7050006", "INSUFFICIENT_SOL"] }, "Not enough SOL to pay the network fee."],
     [{ codes: ["WALLET_SYNC", "CLIENT_REQUEST", "API_REQUEST"] }, "The Ring indexer is unavailable right now. Try again in a minute."],
     [{ codes: ["WALLET_ALTERED_TX"] }, "Your wallet changed this Ring transaction, so it can't be sent. Try a Crypsis vault."],
+    [{ codes: ["CLIENT_RPC"] }, "The Solana network is busy or unreachable right now. Try again in a moment."],
+    [{ codes: ["SOLANA_8100002"], message: "HTTP error (429): Too Many Requests" }, "The Solana network is busy or unreachable right now. Try again in a moment."],
+    [{ codes: ["CLIENT_RPC", "SOLANA_-32002", "INSUFFICIENT_SOL"] }, "Not enough SOL to pay the network fee."],
+    [{ codes: ["NO_RESPONSE"] }, "Your wallet didn't respond. Open it and try again."],
   ])("%j", (input, message) => {
     expect(friendlyError(input).message).toBe(message);
   });

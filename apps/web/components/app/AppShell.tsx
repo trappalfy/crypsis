@@ -1,11 +1,10 @@
 import Link from "next/link";
 import { Suspense } from "react";
 import AppNav, { AppNavStatic } from "./AppNav";
-import CornerButterfly from "./CornerButterfly";
 import WalletSlot from "./WalletSlot";
 import styles from "./AppShell.module.css";
 
-// Brief §6 (Stoma): dark, orange "funnel" glow, glass pills, a small ASCII butterfly top-right.
+// Brief §6 (Stoma): dark, orange "funnel" glow, glass pills. (The top-right corner butterfly was removed at the owner's request, 2026-11-25.)
 export default function AppShell({ children }: { children: React.ReactNode }) {
   return (
     <div className={styles.shell}>
@@ -15,7 +14,6 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
         <Suspense fallback={<AppNavStatic />}><AppNav /></Suspense>
         <div className={styles.right}><WalletSlot /></div>
       </header>
-      <div className={styles.corner} aria-hidden="true"><CornerButterfly /></div>
       <main className={styles.main}>{children}</main>
     </div>
   );
