@@ -46,6 +46,8 @@ pnpm dev                                 # http://localhost:3000
 | `NEXT_PUBLIC_APP_LIVE` | клиент | `false` = «Launch soon». Приложение и Launch на mainnet недоступны, на devnet работают |
 | `NEXT_PUBLIC_SOLANA_NETWORK` | клиент | `devnet` / `mainnet` |
 | `NEXT_PUBLIC_HELIUS_RPC_URL`, `_WS_URL` | клиент | браузерный Helius-ключ **с ограничением по домену** |
+| `SITE_ACCESS_KEY` | сервер | закрытый показ: ключ для входа на сайт (16+ символов). На Vercel без ключа сайт закрыт для всех |
+| `SITE_PUBLIC` | сервер | `true` открывает сайт для всех (снимает вход по ключу) |
 | `NEXT_PUBLIC_HELIUS_API_KEY` | клиент | необязательно: ключ для Ring indexer/prover. По умолчанию берётся `api-key` из `NEXT_PUBLIC_HELIUS_RPC_URL`. Без ключа indexer и prover отвечают 403 |
 | `NEXT_PUBLIC_SPR_INDEXER_URL`, `_PROVER_URL` | клиент | Ring indexer/prover той же сети (по умолчанию — адреса из README SDK) |
 | `HELIUS_API_KEY` | сервер | RPC для крона, вебхука, `/api/slot`, `/api/launches` |
