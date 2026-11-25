@@ -1,0 +1,14 @@
+.head { display: flex; justify-content: space-between; align-items: end; gap: 16px; flex-wrap: wrap; margin: 12px 0 8px; }
+.list { list-style: none; }
+.list li { display: grid; grid-template-columns: auto 1fr auto auto; align-items: center; gap: 14px; padding: 14px 0; border-bottom: 1px solid rgba(255,255,255,.05); }
+.coinName { display: inline-flex; align-items: center; gap: 8px; font-weight: 500; }
+.amount { font-family: var(--sans); font-size: 22px; font-variant-numeric: tabular-nums; letter-spacing: -0.01em; }
+.activity { list-style: none; }
+.activity li { display: grid; grid-template-columns: 120px 60px 1fr; gap: 12px; padding: 10px 0; border-bottom: 1px solid rgba(255,255,255,.05); font-size: 14px; }
+.activity .amount { font-size: 15px; text-align: right; }
+.form { display: grid; grid-template-columns: 1.1fr .9fr; gap: 14px; align-items: start; }
+.hiddenCol { border-radius: 14px; padding: 16px; background: rgba(236,108,64,.08); border: 1px solid rgba(236,108,64,.3); }
+.publicCol { border-radius: 14px; padding: 16px; background: rgba(255,255,255,.03); border: 1px solid var(--glass-b); }
+.colTitle { font-family: var(--mono); font-size: 11px; text-transform: uppercase; letter-spacing: .04em; margin-bottom: 10px; opacity: .8; }
+.colRow { display: flex; justify-content: space-between; gap: 10px; padding: 6px 0; font-size: 14px; }
+@media (max-width: 860px) { .form { grid-template-columns: 1fr; } .list li { grid-template-columns: auto 1fr auto; } .list li > :last-child { grid-column: 1 / -1; } }

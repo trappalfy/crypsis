@@ -1,0 +1,23 @@
+.header { display: flex; align-items: center; gap: 18px; flex-wrap: wrap; margin: 20px 0 28px; }
+.titleBlock { min-width: 0; flex: 1; }
+.name { font-family: var(--serif); font-weight: 400; font-size: clamp(40px, 5vw, 72px); line-height: .95; letter-spacing: -0.02em; overflow-wrap: anywhere; }
+.copy { margin-top: 8px; font-family: var(--mono); font-size: 12px; color: var(--muted); display: inline-flex; gap: 10px; max-width: 100%; }
+.addr { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.copy:hover { color: #fff; }
+.links { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+.grid { display: grid; grid-template-columns: minmax(260px, 1fr) 2fr; gap: 14px; }
+.hero { display: flex; flex-direction: column; justify-content: space-between; min-height: 280px; }
+.heroNum { font-family: var(--sans); font-size: clamp(64px, 8vw, 120px); line-height: .9; letter-spacing: -0.04em; font-variant-numeric: tabular-nums; }
+.bps { font-size: 12px; opacity: .7; }
+.chart { min-width: 0; }
+.chartHead { display: flex; justify-content: space-between; align-items: center; gap: 12px; }
+.svg { width: 100%; height: auto; display: block; margin-top: 10px; }
+.cards { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin-top: 14px; }
+.mid { font-family: var(--sans); font-size: clamp(28px, 3vw, 40px); line-height: 1; letter-spacing: -0.02em; font-variant-numeric: tabular-nums; margin-bottom: 8px; }
+.eventsHead { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; margin-bottom: 8px; }
+.events { list-style: none; }
+.events li { display: grid; grid-template-columns: 100px 1fr 120px 90px 50px; gap: 12px; padding: 12px 0; border-bottom: 1px solid rgba(255,255,255,.05); font-size: 14px; align-items: center; }
+.events a { color: var(--muted); text-decoration: none; } .events a:hover { color: #fff; }
+.num { font-variant-numeric: tabular-nums; }
+.dep { color: var(--ok); } .wd { color: var(--warn); }
+@media (max-width: 860px) { .grid, .cards { grid-template-columns: 1fr; } .events li { grid-template-columns: 80px 1fr 70px; } .events li > :nth-child(3), .events li > :nth-child(4) { display: none; } }

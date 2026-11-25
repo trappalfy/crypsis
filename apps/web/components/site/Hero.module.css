@@ -1,0 +1,26 @@
+.hero { position: relative; height: 100vh; height: 100svh; min-height: 560px; background: var(--orange); color: var(--ink); overflow: hidden; }
+.hero canvas { position: absolute; inset: 0; width: 100%; height: 100%; }
+.noscript { position: absolute; inset: 6% 0 auto; margin: 0 auto; width: max-content; color: #fff; font: 500 8px/1 var(--mono); }
+.ui { position: absolute; inset: 0; pointer-events: none; padding: 28px var(--margin); display: grid;
+      grid-template-columns: repeat(12, 1fr); grid-template-rows: auto 1fr auto; column-gap: var(--gutter); }
+.wordmark { grid-column: 1 / 5; font-family: var(--serif); font-weight: 400; font-size: clamp(64px, 9.2vw, 148px); line-height: .82; letter-spacing: -0.035em; }
+.m1 { grid-column: 6 / 8; } .m2 { grid-column: 8 / 10; } .m3 { grid-column: 11 / 13; text-align: right; }
+.dim { opacity: .55; }
+.bottom { grid-row: 3; grid-column: 1 / 13; display: grid; grid-template-columns: repeat(12, 1fr); column-gap: var(--gutter); align-items: end; }
+.headline { grid-column: 1 / 6; font-family: var(--serif); font-size: clamp(44px, 5vw, 80px); line-height: .92; letter-spacing: -0.02em; }
+.headline em { font-style: italic; }
+.tabs { grid-column: 6 / 10; display: flex; gap: 22px; justify-content: center; pointer-events: auto; }
+.tabs a { color: var(--ink); text-decoration: none; padding-bottom: 3px; border-bottom: 1px solid transparent; transition: border-color .3s var(--ease); }
+.tabs a:hover, .tabs a.on { border-bottom-color: var(--ink); }
+.note { grid-column: 10 / 13; text-align: right; }
+.pill { display: inline-block; margin-top: 10px; padding: 9px 14px; border: 1px solid var(--ink); border-radius: var(--radius-pill); pointer-events: auto; text-decoration: none; transition: background .3s var(--ease), color .3s var(--ease); }
+.pill:hover { background: var(--ink); color: var(--orange); }
+@media (max-width: 760px) {
+  .ui { padding: 18px 16px; grid-template-columns: repeat(4, 1fr); column-gap: 12px; }
+  .wordmark { grid-column: 1 / 5; font-size: 64px; }
+  .m1 { grid-column: 1 / 3; margin-top: 12px; } .m2 { display: none; } .m3 { grid-column: 3 / 5; margin-top: 12px; }
+  .bottom { grid-column: 1 / 5; grid-template-columns: repeat(4, 1fr); row-gap: 14px; }
+  .headline { grid-column: 1 / 5; font-size: 46px; }
+  .tabs { grid-column: 1 / 5; justify-content: flex-start; gap: 14px; }
+  .note { grid-column: 1 / 5; text-align: left; }
+}

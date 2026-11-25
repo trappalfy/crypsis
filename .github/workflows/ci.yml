@@ -1,0 +1,54 @@
+name: ci
+on:
+  push:
+  pull_request:
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:17
+        env: { POSTGRES_PASSWORD: postgres, POSTGRES_DB: crypsis_test }
+        ports: ["5432:5432"]
+        options: --health-cmd pg_isready --health-interval 5s --health-timeout 5s --health-retries 10
+    env:
+      DATABASE_URL: postgres://postgres:postgres@localhost:5432/crypsis_test
+      NEXT_PUBLIC_SOLANA_NETWORK: devnet
+      NEXT_PUBLIC_APP_LIVE: "false"
+      CRON_SECRET: ci-cron-secret
+      HELIUS_WEBHOOK_SECRET: ci-webhook-secret
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 24, cache: pnpm }
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm audit --prod --audit-level high
+        continue-on-error: true # report; dependency bumps of the alpha SDKs need a changelog read first (brief §10)
+      - run: pnpm --filter @crypsis/db migrate
+      - run: pnpm --filter web typecheck
+      - run: pnpm --filter web lint
+      # unit tests include the ASCII golden test (0 differences vs kit/ascii/frames)
+      - run: pnpm --filter web test
+      - run: pnpm --filter web build
+      - run: pnpm --filter web exec playwright install --with-deps chromium
+      - run: pnpm --filter web e2e
+      - uses: actions/upload-artifact@v4
+        if: failure()
+        with: { name: playwright-report, path: apps/web/test-results }
+
+  # Brief R6: pump.fun upgrades its programs often. Read-only mainnet simulation of the launch transactions
+  # (simulateTransaction, sigVerify:false — nothing is signed or sent). Fails the job (= alert) on any error.
+  launch-simulation:
+    runs-on: ubuntu-latest
+    if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch' || github.event_name == 'push'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 24, cache: pnpm }
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm --filter web exec tsx scripts/launch-simulate.ts
+        env:
+          MAINNET_RPC_URL: ${{ secrets.MAINNET_RPC_URL }}

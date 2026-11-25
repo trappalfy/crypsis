@@ -1,0 +1,12 @@
+packages:
+  - "apps/*"
+  - "packages/*"
+  - "scripts"
+allowBuilds:
+  sharp: true
+  unrs-resolver: true
+  esbuild: true
+  "@lightprotocol/hasher.rs": true
+  bigint-buffer: false
+  bufferutil: false
+  utf-8-validate: false

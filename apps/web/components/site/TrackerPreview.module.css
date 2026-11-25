@@ -1,0 +1,18 @@
+.band { background: var(--night); color: #fff; padding: clamp(56px, 8vw, 120px) var(--margin); position: relative; overflow: hidden; }
+.band::before { content: ""; position: absolute; inset: -40% -10% auto; height: 80%; background: radial-gradient(50% 50% at 50% 50%, rgba(236,108,64,.35), transparent 70%); pointer-events: none; }
+.head { position: relative; display: flex; justify-content: space-between; align-items: end; gap: 20px; flex-wrap: wrap; margin-bottom: 36px; }
+.title { font-family: var(--serif); font-weight: 400; font-size: clamp(44px, 6vw, 96px); line-height: .92; letter-spacing: -0.02em; }
+.sub { color: var(--muted); display: flex; align-items: center; gap: 8px; }
+.live { width: 7px; height: 7px; border-radius: 50%; background: var(--orange); box-shadow: 0 0 0 4px rgba(236,108,64,.2); }
+.empty { position: relative; font-family: var(--mono); font-size: 14px; color: var(--muted); padding: 40px 0; border-top: 1px solid var(--glass-b); border-bottom: 1px solid var(--glass-b); }
+.rows { position: relative; list-style: none; border-top: 1px solid var(--glass-b); }
+.row { display: grid; grid-template-columns: 48px 1fr auto 110px; align-items: center; gap: 16px; padding: 16px 0; border-bottom: 1px solid var(--glass-b); text-decoration: none; transition: background .3s var(--ease); }
+.row:hover { background: rgba(255,255,255,.03); }
+.rank { color: var(--muted); }
+.coin { display: flex; align-items: center; gap: 12px; font-family: var(--sans); font-weight: 500; font-size: 18px; min-width: 0; }
+.icon { width: 28px; height: 28px; border-radius: 50%; background: var(--night-2); border: 1px solid var(--glass-b); object-fit: cover; flex: none; }
+.mint { color: var(--muted); }
+.share { font-family: var(--sans); font-size: 28px; text-align: right; }
+.cta { position: relative; display: inline-block; margin-top: 32px; padding: 11px 18px; border-radius: var(--radius-pill); background: var(--orange); color: var(--ink); text-decoration: none; font-family: var(--mono); font-size: 12px; text-transform: uppercase; letter-spacing: .04em; font-weight: 500; }
+.cta:hover { background: var(--orange-2); }
+@media (max-width: 760px) { .row { grid-template-columns: 32px 1fr 84px; } .bars { display: none; } .mint { display: none; } .share { font-size: 22px; } }

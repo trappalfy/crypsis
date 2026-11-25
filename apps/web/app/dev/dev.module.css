@@ -1,0 +1,13 @@
+.dev { min-height: 100vh; background: var(--night); color: #fff; padding: 40px var(--margin); font-family: var(--mono); font-size: 13px; line-height: 1.5; }
+.dev h1 { font-family: var(--serif); font-weight: 400; font-size: 56px; line-height: .92; margin-bottom: 8px; }
+.dev h2 { font-size: 11px; text-transform: uppercase; letter-spacing: .04em; color: var(--muted); margin: 28px 0 10px; font-weight: 500; }
+.dev p { color: var(--muted); max-width: 70ch; }
+.dev pre { background: var(--night-2); border: 1px solid var(--glass-b); border-radius: 12px; padding: 16px; overflow: auto; white-space: pre-wrap; }
+.row { display: flex; gap: 10px; flex-wrap: wrap; margin: 12px 0; }
+.btn { padding: 9px 14px; border-radius: 999px; border: 1px solid var(--glass-b); background: var(--glass); color: #fff; }
+.btn:disabled { opacity: .4; cursor: default; }
+.btn.on { background: var(--orange); color: var(--ink); border-color: var(--orange); }
+.ok { color: var(--ok); } .bad { color: var(--err); } .warn { color: var(--warn); }
+.table { border-collapse: collapse; width: 100%; max-width: 900px; }
+.table td, .table th { text-align: left; border-bottom: 1px solid var(--glass-b); padding: 8px 10px 8px 0; vertical-align: top; }
+.table th { color: var(--muted); font-weight: 500; }

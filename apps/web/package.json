@@ -1,0 +1,52 @@
+{
+  "name": "web",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "eslint",
+    "typecheck": "tsc --noEmit -p .",
+    "test": "vitest run",
+    "e2e": "playwright test",
+    "tracker:backfill": "tsx scripts/backfill.ts",
+    "tracker:snapshot": "tsx scripts/snapshot.ts",
+    "tracker:reconcile": "tsx scripts/reconcile.ts"
+  },
+  "dependencies": {
+    "@crypsis/db": "workspace:*",
+    "@heliuslabs/spr": "0.9.0-alpha",
+    "@pump-fun/pump-sdk": "4.3.1",
+    "@solana-program/system": "^0.14.1",
+    "@solana-program/token": "^0.16.1",
+    "@solana/kit": "^8.6.0",
+    "@solana/spl-token": "^0.4.15",
+    "@solana/wallet-standard-features": "^1.5.0",
+    "@solana/web3.js": "^1.99.0",
+    "@wallet-standard/app": "^1.1.1",
+    "@wallet-standard/base": "^1.1.1",
+    "@wallet-standard/features": "^1.1.1",
+    "bn.js": "^5.2.5",
+    "drizzle-orm": "^0.45.4",
+    "geist": "^1.9.2",
+    "next": "16.4.6",
+    "react": "19.3.0",
+    "react-dom": "19.3.0",
+    "server-only": "^0.0.1"
+  },
+  "devDependencies": {
+    "@axe-core/playwright": "^4.14.0",
+    "@playwright/test": "^1.65.1",
+    "@types/bn.js": "^5.2.0",
+    "@types/node": "^20",
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
+    "eslint": "^9",
+    "eslint-config-next": "16.4.6",
+    "tsx": "^4.23.15",
+    "typescript": "^5",
+    "vitest": "^5.1.1"
+  },
+  "type": "module"
+}
