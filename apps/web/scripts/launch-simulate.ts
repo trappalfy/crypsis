@@ -5,7 +5,7 @@ import { Connection, PublicKey, type VersionedTransaction } from "@solana/web3.j
 import { OnlinePumpSdk } from "@pump-fun/pump-sdk";
 import { buildLaunch, NAME_MAX, ringReadyInstructions, SYMBOL_MAX, toV0 } from "../lib/pump/launch";
 
-const RPC = process.env.MAINNET_RPC_URL ?? (process.env.HELIUS_API_KEY ? `https://mainnet.helius-rpc.com/?api-key=${process.env.HELIUS_API_KEY}` : "https://api.mainnet-beta.solana.com");
+const RPC = process.env.MAINNET_RPC_URL || (process.env.HELIUS_API_KEY ? `https://mainnet.helius-rpc.com/?api-key=${process.env.HELIUS_API_KEY}` : "https://api.mainnet-beta.solana.com");
 const conn = new Connection(RPC, "confirmed");
 const arg = (k: string) => { const i = process.argv.indexOf(k); return i > 0 ? process.argv[i + 1] : undefined; };
 const URI = "https://ipfs.io/ipfs/bafkreibd6f6szmppui7vt72xz3s4nn4av3w7x3cez4btq5abnofgkef6ee";
