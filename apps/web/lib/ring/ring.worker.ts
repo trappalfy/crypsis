@@ -61,6 +61,7 @@ import type {
 } from "./protocol";
 import { snapshotKeyMaterial, vaultSeedFromSignature } from "./snapshot-key";
 import { keyedServiceConfig } from "./api-key";
+import { retryingFetch } from "./retry-fetch";
 import { vaultMessage } from "./derivation";
 import { idbSnapshotStore } from "./idb-store";
 import { decodeMetaplex, decodeMintInfo } from "./token-meta";
@@ -74,6 +75,7 @@ const PRIORITY_FEE_LAMPORTS = 20_000n;
 const USER_RECORD_SIZE = 100n;
 
 // ---------------------------------------------------------------- client
+const ringFetch = retryingFetch(globalThis.fetch.bind(globalThis));
 let clientPromise: Promise<SprClient> | null = null;
 let clientKey = "";
 function getClient(e: RingEndpoints): Promise<SprClient> {
@@ -85,6 +87,7 @@ function getClient(e: RingEndpoints): Promise<SprClient> {
       ...keyedServiceConfig(e),
       proverTee: SignedTeePolicy.forNetwork(e.network),
       priorityFeeLamports: PRIORITY_FEE_LAMPORTS,
+      fetch: ringFetch, // back off and retry Helius 429 / 50x instead of failing the user's action
     });
   }
   return clientPromise;
@@ -428,7 +431,7 @@ async function submit(p: { txId: string; signedBytes?: Uint8Array; sync: boolean
 // ---------------------------------------------------------------- phase-0 helpers
 async function selftest(endpoints: RingEndpoints): Promise<SelftestResult> {
   const t0 = performance.now();
-  const client = await createSprClient({ solanaRpcUrl: endpoints.rpcUrl });
+  const client = await createSprClient({ solanaRpcUrl: endpoints.rpcUrl, fetch: ringFetch });
   const t1 = performance.now();
   const kp = await generateKeyPair();
   const owner = await getAddressFromPublicKey(kp.publicKey);
@@ -458,7 +461,7 @@ async function selftest(endpoints: RingEndpoints): Promise<SelftestResult> {
 }
 
 async function probeTransaction(endpoints: RingEndpoints, owner: string): Promise<ProbeTx> {
-  const client = await createSprClient({ solanaRpcUrl: endpoints.rpcUrl });
+  const client = await createSprClient({ solanaRpcUrl: endpoints.rpcUrl, fetch: ringFetch });
   const recipient = ShieldedKeypair.generate();
   const tx = await buildDepositTransaction({ client, feePayer: address(owner), recipient: recipient.shieldedAddress(), amount: 1_000n });
   recipient.destroy();
