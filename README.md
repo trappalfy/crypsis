@@ -43,7 +43,7 @@ pnpm dev                                 # http://localhost:3000
 
 | Переменная | Где | Зачем |
 |---|---|---|
-| `NEXT_PUBLIC_APP_LIVE` | клиент | `false` = «Launch soon». Приложение и Launch на mainnet недоступны, на devnet работают |
+| `APP_LIVE` (или `NEXT_PUBLIC_APP_LIVE`) | сборка | `false` = «Launch soon». Приложение и Launch на mainnet недоступны, на devnet работают |
 | `NEXT_PUBLIC_SOLANA_NETWORK` | клиент | `devnet` / `mainnet` |
 | `NEXT_PUBLIC_HELIUS_RPC_URL`, `_WS_URL` | клиент | браузерный Helius-ключ **с ограничением по домену** |
 | `SITE_ACCESS_KEY` | сервер | закрытый показ: ключ для входа на сайт (16+ символов). На Vercel без ключа сайт закрыт для всех |
@@ -79,7 +79,7 @@ pnpm --filter @crypsis/scripts spike:devnet     # фаза 0: полный ци�
 3. `apps/web/vercel.json` уже содержит крон `*/5 * * * *` → `/api/cron/snapshot`.
 4. База: `DATABASE_URL=… pnpm db:migrate`, затем `pnpm tracker:backfill` (с `HELIUS_API_KEY`).
 5. Helius → Webhooks: тип **raw**, адрес `ring1GaLCuJnkUMVkX2JeZLTTX17wKsV4fZmPVzXANW`, URL `https://crypsis.fun/api/webhooks/helius`, authHeader = `HELIUS_WEBHOOK_SECRET`. Без вебхука крон всё равно догоняет события раз в 5 минут.
-6. Запуск: по локальному чек-листу владельца. `NEXT_PUBLIC_APP_LIVE=true` переключает владелец.
+6. Запуск: по локальному чек-листу владельца. `APP_LIVE=true` переключает владелец.
 
 ## Ключевые решения
 

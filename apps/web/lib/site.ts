@@ -2,7 +2,7 @@
 export const SITE = {
   url: process.env.NEXT_PUBLIC_SITE_URL || "https://crypsis.fun",
   xUrl: process.env.NEXT_PUBLIC_X_URL || "https://x.com/crypsisfun",
-  appLive: process.env.NEXT_PUBLIC_APP_LIVE === "true",
+  appLive: process.env.CRYPSIS_APP_LIVE === "true", // from APP_LIVE / NEXT_PUBLIC_APP_LIVE via next.config env
   network: (process.env.NEXT_PUBLIC_SOLANA_NETWORK === "mainnet" ? "mainnet" : "devnet") as "mainnet" | "devnet",
   title: "Crypsis — Encrypted transfers for pump.fun coins",
   description:

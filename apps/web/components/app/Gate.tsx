@@ -105,7 +105,7 @@ export function ActivateBanner() {
 
 export default function Gate({ children, banner = true }: { children: React.ReactNode; banner?: boolean }) {
   const { status } = useSession();
-  // Before launch the app is only usable on devnet (owner flips NEXT_PUBLIC_APP_LIVE for mainnet).
+  // Before launch the app is only usable on devnet (owner sets APP_LIVE=true for mainnet).
   if (!SITE.appLive && SITE.network === "mainnet") {
     return (
       <div className={styles.center}>

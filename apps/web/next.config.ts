@@ -11,6 +11,10 @@ const hasherDir = join(sprDir, "..", "..", "@lightprotocol", "hasher.rs");
 const rel = (f: string) => "./" + relative(process.cwd(), join(hasherDir, "dist", f));
 
 const nextConfig: NextConfig = {
+  // The owner's "app is live" switch. APP_LIVE (no public prefix) works with Vercel's sensitive-by-default
+  // variables, which refuse NEXT_PUBLIC_ names; NEXT_PUBLIC_APP_LIVE still works for older setups.
+  // Not a secret: the value is inlined into the bundle at build time.
+  env: { CRYPSIS_APP_LIVE: process.env.APP_LIVE === "true" || process.env.NEXT_PUBLIC_APP_LIVE === "true" ? "true" : "false" },
   cacheComponents: true,
   partialPrefetching: true,
   poweredByHeader: false,
