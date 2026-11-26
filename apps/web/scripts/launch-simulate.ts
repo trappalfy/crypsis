@@ -1,7 +1,7 @@
 // Brief §2.5/§13: mainnet READ-ONLY simulation of the launch transactions. Never signs with a real key,
 // never sends. simulateTransaction with sigVerify:false + replaceRecentBlockhash.
 // usage: tsx scripts/launch-simulate.ts [--user <funded mainnet address>] [--existing <create_v2 mint without a Ring vault>]
-import { Connection, PublicKey, type VersionedTransaction } from "@solana/web3.js";
+import { Connection, PublicKey, SystemProgram, type VersionedTransaction } from "@solana/web3.js";
 import { OnlinePumpSdk } from "@pump-fun/pump-sdk";
 import { buildLaunch, NAME_MAX, ringReadyInstructions, SYMBOL_MAX, toV0 } from "../lib/pump/launch";
 
@@ -10,9 +10,21 @@ const conn = new Connection(RPC, "confirmed");
 const arg = (k: string) => { const i = process.argv.indexOf(k); return i > 0 ? process.argv[i + 1] : undefined; };
 const URI = "https://ipfs.io/ipfs/bafkreibd6f6szmppui7vt72xz3s4nn4av3w7x3cez4btq5abnofgkef6ee";
 
+// The fee payer must be a system-owned account with SOL. pump.fun's fee recipients moved under its fee program
+// (2026-11), so they can no longer pay fees: take the first candidate that still can.
+async function fundedPayer(candidates: (PublicKey | string | undefined)[]): Promise<PublicKey> {
+  for (const c of candidates) {
+    if (!c) continue;
+    const key = new PublicKey(c);
+    const info = await conn.getAccountInfo(key);
+    if (info && info.owner.equals(SystemProgram.programId) && info.lamports >= 50_000_000) return key;
+  }
+  throw new Error("no funded system account among the candidates — pass --user <funded mainnet address>");
+}
+
 async function main() {
   const global = await new OnlinePumpSdk(conn).fetchGlobal();
-  const user = new PublicKey(arg("--user") ?? global.feeRecipient.toBase58()); // any funded system account
+  const user = await fundedPayer([arg("--user"), global.authority, global.feeRecipient, ...(global.feeRecipients ?? [])]);
   console.log("simulated creator:", user.toBase58());
   let ok = true;
   const sim = async (label: string, tx: VersionedTransaction) => {
