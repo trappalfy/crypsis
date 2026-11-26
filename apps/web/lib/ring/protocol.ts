@@ -89,3 +89,6 @@ export type RingRequest =
 export type RingResponse =
   | { id: number; ok: true; result: unknown }
   | { id: number; ok: false; error: RingErrorPayload };
+
+/** Native SOL as the Ring SDK names it (its SOL_MINT: the System Program address, not wrapped SOL). */
+export const NATIVE_SOL = "11111111111111111111111111111111";

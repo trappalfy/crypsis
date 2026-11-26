@@ -2,7 +2,7 @@
 import { useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import { callRing } from "@/lib/ring/client";
-import type { BuiltTx, PublicToken } from "@/lib/ring/protocol";
+import { NATIVE_SOL as SOL, type BuiltTx, type PublicToken } from "@/lib/ring/protocol";
 import { useSession } from "@/lib/app/session";
 import { formatUnits, parseUnits } from "@/lib/app/amount";
 import { shortAddress } from "@/lib/solana/wallet-standard";
@@ -15,7 +15,6 @@ import { ErrorNotice } from "../Gate";
 import ui from "../ui.module.css";
 import styles from "./screens.module.css";
 
-const SOL = "So11111111111111111111111111111111111111112";
 const SOL_RESERVE = 10_000_000n; // keep 0.01 SOL for fees
 
 function useTokens(owner: string | undefined, version: number) {
