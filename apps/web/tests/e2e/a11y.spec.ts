@@ -2,7 +2,7 @@ import AxeBuilder from "@axe-core/playwright";
 import { expect, test } from "@playwright/test";
 import { injectTestWallet } from "./test-wallet";
 
-const PAGES = ["/?t=6", "/tracker", "/privacy-model", "/terms", "/launch", "/app"];
+const PAGES = ["/?t=6", "/tracker", "/privacy-model", "/terms", "/privacy", "/launch", "/app"];
 
 for (const path of PAGES) {
   test(`a11y: ${path}`, async ({ page }, info) => {

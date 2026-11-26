@@ -11,6 +11,7 @@
 .body h2 { font-family: var(--sans); font-weight: 500; font-size: 24px; letter-spacing: -0.01em; margin: 48px 0 14px; }
 .body p, .body li { font-family: var(--mono); font-size: 14px; line-height: 1.65; color: rgba(17,16,16,.8); max-width: 68ch; }
 .body ul { padding-left: 18px; display: grid; gap: 6px; }
+.body p + p, .body ul + p, .body p + ul { margin-top: 14px; }
 .body a { color: var(--orange-text); }
 :global(.notice), .notice { border: 1px dashed rgba(17,16,16,.35); border-radius: 12px; padding: 18px; }
 @media (max-width: 760px) { .nav { gap: 14px; } }
