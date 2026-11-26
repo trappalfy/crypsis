@@ -86,11 +86,3 @@ export function decodeBondingCurve(data: Buffer): { complete: boolean; creator: 
 export const isPumpCurve = (owner: string | undefined) => owner === PUMP_PROGRAM;
 export const isToken2022 = (program: string) => program === TOKEN_2022_PROGRAM;
 
-/** Prefer one public IPFS gateway for every image (CSP img-src stays short). */
-export function normalizeImage(uri: string | null | undefined, gateway = process.env.IPFS_GATEWAY || "https://ipfs.io/ipfs/"): string | null {
-  if (!uri) return null;
-  const m = uri.match(/\/ipfs\/([A-Za-z0-9]+)(\/.*)?$/) ?? uri.match(/^ipfs:\/\/([A-Za-z0-9]+)(\/.*)?$/);
-  if (m) return `${gateway}${m[1]}${m[2] ?? ""}`;
-  // CSP img-src allows only the IPFS gateway (brief §10): other hosts get the placeholder icon
-  return null;
-}

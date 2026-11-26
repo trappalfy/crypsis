@@ -2,7 +2,7 @@
 import Link from "next/link";
 import { useState, useTransition } from "react";
 import DotBars from "@/components/ascii/DotBars";
-import { formatPp, formatShare, formatTokenAmount, shortMint, type CoinSummary } from "@/lib/tracker/types";
+import { coinImageUrl, formatPp, formatShare, formatTokenAmount, shortMint, type CoinSummary } from "@/lib/tracker/types";
 import { TRACKER_PREVIEW } from "@/lib/copy";
 import ui from "@/components/app/ui.module.css";
 import styles from "./Tracker.module.css";
@@ -15,9 +15,9 @@ const FILTERS: { key: Filter; label: string }[] = [
   { key: "graduated", label: "Graduated" },
 ];
 
-export function CoinIcon({ c, size = 28 }: { c: Pick<CoinSummary, "imageUri" | "symbol">; size?: number }) {
+export function CoinIcon({ c, size = 28 }: { c: Pick<CoinSummary, "mint" | "imageUri" | "symbol">; size?: number }) {
   // eslint-disable-next-line @next/next/no-img-element
-  return c.imageUri ? <img src={c.imageUri} alt="" width={size} height={size} className={styles.icon} loading="lazy" referrerPolicy="no-referrer" /> : <span className={styles.icon} style={{ width: size, height: size }} aria-hidden="true" />;
+  return c.imageUri ? <img src={coinImageUrl(c.mint)} alt="" width={size} height={size} className={styles.icon} loading="lazy" /> : <span className={styles.icon} style={{ width: size, height: size }} aria-hidden="true" />;
 }
 
 export default function TrackerTable({ initial, initialCursor }: { initial: CoinSummary[]; initialCursor: string | null }) {

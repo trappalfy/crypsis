@@ -1,7 +1,7 @@
 import Link from "next/link";
 import DotBars from "@/components/ascii/DotBars";
 import { getTopCoins } from "@/lib/tracker/data";
-import { formatShare, shortMint } from "@/lib/tracker/types";
+import { coinImageUrl, formatShare, shortMint } from "@/lib/tracker/types";
 import { TRACKER_PREVIEW } from "@/lib/copy";
 import styles from "./TrackerPreview.module.css";
 
@@ -23,7 +23,7 @@ export default async function TrackerPreview() {
               <Link href={`/coin/${c.mint}`} className={styles.row}>
                 <span className={`micro ${styles.rank}`}>{String(i + 1).padStart(2, "0")}</span>
                 <span className={styles.coin}>
-                  {c.imageUri ? <img src={c.imageUri} alt="" width={28} height={28} className={styles.icon} loading="lazy" /> : <span className={styles.icon} />}
+                  {c.imageUri ? <img src={coinImageUrl(c.mint)} alt="" width={28} height={28} className={styles.icon} loading="lazy" /> : <span className={styles.icon} />}
                   <span>{c.symbol ?? shortMint(c.mint)}</span>
                   <span className={`micro ${styles.mint}`}>{shortMint(c.mint)}</span>
                 </span>

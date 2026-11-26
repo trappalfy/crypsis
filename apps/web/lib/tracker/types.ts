@@ -36,3 +36,6 @@ export function formatTokenAmount(raw: string, decimals: number): string {
   return (Number(whole) + frac).toLocaleString("en-US", { maximumFractionDigits: 2 });
 }
 export const shortMint = (m: string) => `${m.slice(0, 4)}…${m.slice(-4)}`;
+
+/** Icon URL on our own origin (app/api/coin-image): the server fetches and resizes the coin's image. */
+export const coinImageUrl = (mint: string) => `/api/coin-image/${mint}`;

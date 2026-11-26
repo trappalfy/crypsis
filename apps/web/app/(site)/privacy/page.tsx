@@ -26,6 +26,7 @@ export default function Privacy() {
       <ul>
         <li><strong>Ordinary request data.</strong> When you open a page, our hosting provider, Vercel, processes your IP address, browser type, the page requested and the time, to deliver the site and protect it from abuse. Vercel keeps these logs under its own policy. Our own code doesn’t log IP addresses or wallet addresses. Rate limits use short-lived counters in memory that are not stored.</li>
         <li><strong>Tracker requests.</strong> The app loads coin and tracker data from our API with plain requests that don’t include your wallet address.</li>
+        <li><strong>Coin images.</strong> Our server fetches coin images from IPFS gateways or the host named in the coin’s metadata, and serves them from crypsis.fun. Those hosts see our server, not you.</li>
         <li><strong>Coin launches.</strong> When you launch a coin, the name, ticker, description, image and links you enter pass through our server to Pinata, which publishes them on IPFS. We don’t keep a copy. After the launch, the app sends our server the coin’s address and the transaction signatures. The server checks them onchain and adds the coin to the tracker.</li>
       </ul>
       <p>Crypsis servers never receive your wallet signature, your private keys, your private balance or your private history.</p>
@@ -37,7 +38,6 @@ export default function Privacy() {
       <ul>
         <li><strong>Helius.</strong> The app talks to Helius’s Solana RPC, its Ring indexer and its Ring prover to read accounts, fetch encrypted Ring state, generate proofs and send transactions. Helius sees your IP address and the addresses and transactions involved. Requests to the prover are encrypted to a hardware-isolated enclave (AWS Nitro) that the app verifies first. Helius’s own privacy policy applies.</li>
         <li><strong>Your wallet.</strong> Your wallet extension or app handles connection and signing under its own policy.</li>
-        <li><strong>Coin images.</strong> Images are loaded from a public IPFS gateway (ipfs.io), which sees your IP address.</li>
         <li><strong>Links you open.</strong> pump.fun, Solscan, X and other sites have their own policies.</li>
       </ul>
 

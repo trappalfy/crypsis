@@ -3,7 +3,8 @@ import { sql } from "drizzle-orm";
 import { coins, type Db, type NewCoin } from "@crypsis/db";
 import { getMultipleAccounts, type RpcFn } from "./rpc";
 import * as A from "./accounts";
-import { insertSnapshots, upsertCoins } from "./store";
+import { getState, insertSnapshots, setState, upsertCoins } from "./store";
+import { metadataImage } from "@/lib/server/remote-media";
 
 /** share in basis points, floored; 0 when supply is 0 */
 export function shareBps(vault: bigint, supply: bigint): number {
@@ -11,29 +12,19 @@ export function shareBps(vault: bigint, supply: bigint): number {
   return Number((vault * 10_000n) / supply);
 }
 
-async function fetchImage(uri: string | null): Promise<string | null> {
-  if (!uri) return null;
-  const url = A.normalizeImage(uri);
-  if (!url) return null;
-  try {
-    const r = await fetch(url, { signal: AbortSignal.timeout(6000) });
-    if (!r.ok) return null;
-    const j = (await r.json()) as { image?: string };
-    return A.normalizeImage(j.image);
-  } catch {
-    return null;
-  }
-}
+const IMAGE_CURSOR = "coins:image-cursor";
 
 /**
  * Pull every Ring-ready mint from chain and upsert the pump.fun ones (and any mint already flagged as
- * launched via Crypsis). Metadata (name/symbol/image) is resolved only for coins we don't know yet.
+ * launched via Crypsis). Metadata (name/symbol/image) is resolved for new coins first; then, within the same
+ * cap, coins that still have no image are retried in mint order from a saved cursor, so every coin gets another
+ * try over a few runs and a dead image can't starve the others.
  */
 export async function syncCoins(db: Db, rpc: RpcFn, opts: { resolveImages?: boolean; maxResolve?: number; budgetMs?: number } = {}): Promise<{ registries: number; pump: number; added: number; resolved: number }> {
   const deadline = Date.now() + (opts.budgetMs ?? 20_000);
   const regs = await A.listRingMints(rpc);
   const mints = regs.map((r) => r.mint);
-  const known = new Map((await db.select({ mint: coins.mint, name: coins.name }).from(coins)).map((c) => [c.mint, c]));
+  const known = new Map((await db.select({ mint: coins.mint, name: coins.name, imageUri: coins.imageUri }).from(coins)).map((c) => [c.mint, c]));
   const mintAccs = await getMultipleAccounts(rpc, mints);
   const curves = await getMultipleAccounts(rpc, mints.map(A.bondingCurveAddress));
   // 1) cheap rows for every coin first (one batched write) — new coins appear even if metadata is slow
@@ -57,19 +48,34 @@ export async function syncCoins(db: Db, rpc: RpcFn, opts: { resolveImages?: bool
   await upsertCoins(db, rows.map(strip));
   // ring_ready_at = earliest indexed interface creation (also covers events that arrived before the coin row)
   await db.execute(sql`update coins c set ring_ready_at = e.t from (select mint, min(block_time) as t from ring_events where kind = 'interface_created' group by mint) e where c.mint = e.mint and (c.ring_ready_at is null or e.t < c.ring_ready_at)`);
-  // 2) metadata for coins without a name, capped per run and written one by one
-  let resolved = 0;
-  for (const r of rows) {
-    if (known.get(r.mint)?.name || resolved >= (opts.maxResolve ?? 20) || Date.now() > deadline) continue;
+  // 2) metadata: new coins (no name) first, then known coins still missing an image (rotating cursor)
+  const images = opts.resolveImages !== false;
+  const fresh = rows.filter((r) => !known.get(r.mint)?.name);
+  let retry: typeof rows = [];
+  let cursor = "";
+  if (images) {
+    cursor = (await getState(db, IMAGE_CURSOR)) ?? "";
+    const missing = rows.filter((r) => known.get(r.mint)?.name && !known.get(r.mint)?.imageUri).sort((a, b) => (a.mint < b.mint ? -1 : 1));
+    retry = [...missing.filter((r) => r.mint > cursor), ...missing.filter((r) => r.mint <= cursor)];
+  }
+  const max = opts.maxResolve ?? 20;
+  let resolved = 0, attempts = 0, lastRetried: string | null = null;
+  for (const [r, isRetry] of [...fresh.map((x) => [x, false] as const), ...retry.map((x) => [x, true] as const)]) {
+    if (attempts >= max || Date.now() > deadline) break;
+    attempts++;
+    if (isRetry) lastRetried = r.mint;
     let meta = A.isToken2022(r.tokenProgram) ? A.decodeToken2022Metadata(r._data) : null;
     if (!meta) {
       const [mpl] = await getMultipleAccounts(rpc, [A.metaplexMetadataAddress(r.mint)]);
       meta = mpl ? A.decodeMetaplexMetadata(mpl.data) : null;
     }
     if (!meta) continue;
-    await upsertCoins(db, [{ ...strip(r), name: meta.name || null, symbol: meta.symbol || null, imageUri: opts.resolveImages !== false ? await fetchImage(meta.uri) : null }]);
+    const imageUri = images ? await metadataImage(meta.uri, {}) : null;
+    if (isRetry && !imageUri) continue; // nothing new to write
+    await upsertCoins(db, [{ ...strip(r), name: meta.name || null, symbol: meta.symbol || null, imageUri }]);
     resolved++;
   }
+  if (lastRetried) await setState(db, IMAGE_CURSOR, lastRetried);
   return { registries: regs.length, pump: rows.filter((r) => r.isPump).length, added, resolved };
 }
 
