@@ -77,8 +77,8 @@ export const FAQ: readonly { q: string; a: string }[] = [
   { q: "Is Crypsis audited?", a: "Crypsis has not been audited. Helius Privacy Rings is a third-party protocol; check Helius documentation for its security status." },
   // TODO(OWNER): append "Crypsis adds no fee." only after the owner confirms there is no Crypsis fee.
   { q: "What does it cost?", a: "Solana network fees and any Ring protocol fees, shown before you sign." },
-  // TODO(OWNER): replace with the tested list from the wallet matrix (docs/phase0-report.md §5).
-  { q: "Which wallets work?", a: "Wallets that can sign the Ring key-derivation message and Ring transactions." },
+  // Tested on mainnet 2026-11-26 through the site (docs/phase0-report.md §5).
+  { q: "Which wallets work?", a: "Phantom and MetaMask are tested; both use a Crypsis vault. Other Solana wallets that support Wallet Standard show up too, and Crypsis checks that each one gives the same keys every time before it can be used." },
 ];
 
 export const FOOTER = {
