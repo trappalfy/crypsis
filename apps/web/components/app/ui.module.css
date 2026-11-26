@@ -50,3 +50,10 @@
 .kv { display: grid; grid-template-columns: auto 1fr; gap: 6px 16px; font-size: 14px; }
 .kv dt { color: var(--muted); font-family: var(--mono); font-size: 12px; text-transform: uppercase; letter-spacing: .04em; padding-top: 2px; }
 .kv dd { text-align: right; font-variant-numeric: tabular-nums; overflow-wrap: anywhere; }
+
+/* header wallet slot: on phones keep one row (network label and button text hide; the dot and icon stay) */
+.nowrap { white-space: nowrap; }
+@media (max-width: 760px) {
+  .walletNet, .walletOutText { display: none; }
+  .walletOut { padding: 8px 10px; }
+}

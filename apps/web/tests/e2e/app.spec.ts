@@ -28,6 +28,18 @@ test("connect -> locked -> unlock (double signature) -> lock", async ({ page }) 
   await expect(page.getByRole("heading", { name: "Unlock your private balance" })).toBeVisible();
 });
 
+test("disconnect returns to the wallet list and isn't undone by a reload", async ({ page }) => {
+  await injectTestWallet(page);
+  await page.goto("/app");
+  await page.getByRole("button", { name: /Crypsis Test Wallet/ }).click();
+  await expect(page.getByRole("heading", { name: "Unlock your private balance" })).toBeVisible();
+  await page.getByRole("button", { name: "Disconnect" }).click();
+  await expect(page.getByRole("button", { name: /Crypsis Test Wallet/ })).toBeVisible();
+  await page.reload();
+  await expect(page.getByRole("button", { name: /Crypsis Test Wallet/ })).toBeVisible();
+  await expect(page.getByRole("button", { name: "Disconnect" })).toHaveCount(0);
+});
+
 test("non-deterministic wallet is refused", async ({ page }) => {
   await injectTestWallet(page, { nondeterministic: true });
   await connectAndUnlock(page);
