@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { callRing } from "@/lib/ring/client";
 import { NATIVE_SOL as SOL, type BuiltTx, type PublicToken } from "@/lib/ring/protocol";
 import { useSession } from "@/lib/app/session";
-import { formatUnits, parseUnits } from "@/lib/app/amount";
+import { formatUnits } from "@/lib/app/amount";
 import { shortAddress } from "@/lib/solana/wallet-standard";
 import { APP_COPY } from "@/lib/copy";
 import AmountInput, { validAmount } from "../AmountInput";
@@ -16,6 +16,10 @@ import ui from "../ui.module.css";
 import styles from "./screens.module.css";
 
 const SOL_RESERVE = 10_000_000n; // keep 0.01 SOL for fees
+// Funding the vault: the wallet must keep its rent-exempt minimum (~0.00089 SOL) plus the fee, and pays the
+// vault's token account (~0.00204 SOL; a little more for Token-2022) when a coin is sent along.
+const WALLET_SOL_RESERVE = 1_000_000n;
+const TOKEN_ACCOUNT_RENT = 2_100_000n;
 
 function useTokens(owner: string | undefined, version: number) {
   const [tokens, setTokens] = useState<PublicToken[] | null>(null);
@@ -53,17 +57,27 @@ function FundVault({ onFunded }: { onFunded: () => void }) {
   const [amt, setAmt] = useState("");
   const [locked, setLocked] = useState(false);
   if (!account || !view) return null;
-  const lamports = parseUnits(sol || "0", 9) ?? 0n;
+  const walletSol = tokens?.find((t) => t.mint === SOL)?.amount ?? null;
+  const solReserve = WALLET_SOL_RESERVE + (tok ? TOKEN_ACCOUNT_RENT : 0n);
+  const lamports = sol.trim() === "" ? 0n : walletSol !== null ? validAmount(sol, 9, walletSol, solReserve) : null;
+  const canPayFees = walletSol !== null && BigInt(walletSol) >= solReserve;
   const tokenRaw = tok ? validAmount(amt, tok.decimals, tok.amount) : null;
   return (
     <div className={ui.card}>
       <p className={ui.label}>Fund your Crypsis vault</p>
       <p className={ui.note} style={{ marginBottom: 14 }}>{APP_COPY.modeBBody}</p>
       <fieldset disabled={locked} style={{ border: 0 }}>
-        <div className={ui.field}>
-          <label className={ui.label} htmlFor="sol" style={{ margin: 0 }}>SOL for fees</label>
-          <input id="sol" className={ui.input} inputMode="decimal" value={sol} onChange={(e) => setSol(e.target.value)} />
-        </div>
+        {walletSol === null ? (
+          <div className={ui.field}>
+            <label className={ui.label} htmlFor="sol" style={{ margin: 0 }}>SOL for fees</label>
+            <input id="sol" className={ui.input} inputMode="decimal" value={sol} onChange={(e) => setSol(e.target.value)} />
+          </div>
+        ) : (
+          <AmountInput id="sol" label="SOL for fees" value={sol} onChange={setSol} decimals={9} max={walletSol} symbol="SOL" reserve={solReserve} />
+        )}
+        {walletSol !== null && !canPayFees && (
+          <div className={ui.notice} style={{ marginTop: 10 }}>Add SOL to your wallet first: funding needs about {formatUnits(solReserve, 9)} SOL left in the wallet for the network fee{tok ? " and the vault's account for this coin" : ""}.</div>
+        )}
         {tokens && <div style={{ marginTop: 14 }}><TokenList tokens={tokens.filter((t) => t.mint !== SOL)} selected={tok?.mint ?? null} onSelect={(t) => { setTok(t); setAmt(""); }} /></div>}
         {tok && <div style={{ marginTop: 14 }}><AmountInput value={amt} onChange={setAmt} decimals={tok.decimals} max={tok.amount} symbol={tok.symbol ?? ""} /></div>}
       </fieldset>
@@ -71,8 +85,8 @@ function FundVault({ onFunded }: { onFunded: () => void }) {
         <TxFlow
           cta="Funding"
           sync={false}
-          disabled={lamports <= 0n && !tokenRaw}
-          build={() => callRing<BuiltTx>("buildFundVault", { from: account.address, lamports: lamports.toString(), ...(tok && tokenRaw ? { token: { mint: tok.mint, amount: tokenRaw.toString(), tokenAccount: tok.tokenAccount, tokenProgram: tok.tokenProgram, decimals: tok.decimals } } : {}) })}
+          disabled={lamports === null || !canPayFees || (lamports <= 0n && !tokenRaw)}
+          build={() => callRing<BuiltTx>("buildFundVault", { from: account.address, lamports: (lamports ?? 0n).toString(), ...(tok && tokenRaw ? { token: { mint: tok.mint, amount: tokenRaw.toString(), tokenAccount: tok.tokenAccount, tokenProgram: tok.tokenProgram, decimals: tok.decimals } } : {}) })}
           review={(tx) => <Review tx={tx} />}
           onActiveChange={setLocked}
           publicNote="This funding transfer is public and links your wallet to the vault address."
@@ -106,8 +120,8 @@ export default function Deposit() {
           <p className={ui.label}>{mode === "B" ? "Coin in your vault" : "Coin in your wallet"}</p>
           <ErrorNotice error={error} />
           {!tokens && !error && <div className={ui.skeleton} style={{ height: 160 }} />}
-          {tokens && tokens.length === 0 && <p className={ui.note}>No coins found at {owner ? shortAddress(owner) : "this address"}.</p>}
-          {tokens && <TokenList tokens={tokens} selected={selected?.mint ?? null} onSelect={(t) => { setSel(t); setAmount(""); }} />}
+          {tokens && tokens.every((t) => t.amount === "0") && <p className={ui.note}>No coins found at {owner ? shortAddress(owner) : "this address"}.</p>}
+          {tokens && <TokenList tokens={tokens.filter((t) => t.amount !== "0")} selected={selected?.mint ?? null} onSelect={(t) => { setSel(t); setAmount(""); }} />}
           {pre && tokens && !tokens.some((t) => t.mint === pre) && <p className={ui.note} style={{ marginTop: 10 }}>You don&apos;t hold {shortAddress(pre)} in this {mode === "B" ? "vault" : "wallet"}.</p>}
         </fieldset>
         <div className={`${ui.card} ${ui.stack}`}>

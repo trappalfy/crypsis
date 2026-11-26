@@ -40,6 +40,18 @@ test("disconnect returns to the wallet list and isn't undone by a reload", async
   await expect(page.getByRole("button", { name: "Disconnect" })).toHaveCount(0);
 });
 
+test("vault funding shows the wallet's SOL and blocks more than it can spend", async ({ page }) => {
+  await injectTestWallet(page, { noV1: true }); // a fresh key: 0 SOL on mainnet
+  await connectAndUnlock(page);
+  await page.getByRole("link", { name: "Deposit" }).first().click();
+  const sol = page.getByLabel("SOL for fees");
+  await expect(sol).toHaveValue("0.02");
+  await expect(page.getByText("Available: 0 SOL")).toBeVisible({ timeout: 30_000 });
+  await expect(page.getByText("More than available.").first()).toBeVisible();
+  await expect(page.getByRole("button", { name: "Review funding" })).toBeDisabled();
+  await expect(page.getByRole("listbox", { name: "Coin" }).first().getByText("SOL", { exact: true })).toHaveCount(0);
+});
+
 test("non-deterministic wallet is refused", async ({ page }) => {
   await injectTestWallet(page, { nondeterministic: true });
   await connectAndUnlock(page);
